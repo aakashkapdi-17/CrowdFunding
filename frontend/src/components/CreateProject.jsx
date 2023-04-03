@@ -1,15 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import { useGlobalState, setGlobalState } from "../store";
 
 const CreateProject = () => {
   const [createModal] = useGlobalState("createModal");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [amount, setAmount] = useState("");
+  const [date, setDate] = useState("");
+  const [imageURL, setImageURL] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!title || !amount || !description || !imageURL || !date) return;
+    const params = {
+      title,
+      amount,
+      description,
+      imageURL,
+      date,
+    };
+    console.log(params);
+  };
   return (
     <div
       className={`fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-50 transform transition-transform duration-300 ${createModal}`}
     >
       <div className="w-11/12 p-6 bg-white shadow-xl shadow-black rounded-xl md:w-2/5 h-7/12">
-        <form className="flex flex-col">
+        <form className="flex flex-col" onSubmit={handleSubmit}>
           <div className="flex items-center justify-between">
             <p className="font-semibold text-black">Add Project Title</p>
             <button className="bg-transparent border-0 focus:outline-none">
@@ -35,6 +53,7 @@ const CreateProject = () => {
               min={0.01}
               name="title"
               placeholder="Title"
+              onChange={(e) => setTitle(e.target.value)}
               required
             />
           </div>
@@ -44,6 +63,7 @@ const CreateProject = () => {
               type="number"
               name="amount"
               placeholder="Amount      {ETH}"
+              onChange={(e) => setAmount(e.target.value)}
               required
             />
           </div>
@@ -53,6 +73,7 @@ const CreateProject = () => {
               type="date"
               name="date"
               placeholder="Expires"
+              onChange={(e) => setDate(e.target.value)}
               required
             />
           </div>
@@ -62,6 +83,7 @@ const CreateProject = () => {
               type="url"
               name="imageURL"
               placeholder="Image URL"
+              onChange={(e) => setImageURL(e.target.value)}
               required
             />
           </div>
@@ -71,6 +93,7 @@ const CreateProject = () => {
               type="text"
               name="description"
               placeholder="Description"
+              onChange={(e) => setDescription(e.target.value)}
               required
             />
           </div>
