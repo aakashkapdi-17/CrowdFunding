@@ -1,26 +1,44 @@
 import React, { useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import { useGlobalState, setGlobalState } from "../store";
+import { createProject } from "../services/blockchain";
+import { toast } from "react-toastify";
 
 const CreateProject = () => {
   const [createModal] = useGlobalState("createModal");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [amount, setAmount] = useState("");
+  const [cost, setCost] = useState("");
   const [date, setDate] = useState("");
   const [imageURL, setImageURL] = useState("");
 
-  const handleSubmit = (e) => {
+  const toTimestamp = (dateStr) => {
+    const dateObj = Date.parse(dateStr);
+    return dateObj / 1000;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!title || !amount || !description || !imageURL || !date) return;
+    if (!title || !cost || !description || !imageURL || !date) return;
     const params = {
       title,
-      amount,
+      cost,
       description,
       imageURL,
-      date,
+      expiresAt: toTimestamp(date),
     };
-    console.log(params);
+
+    await createProject(params);
+    toast.success("Project Created Successfully", {
+      position: "top-left",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
   };
   return (
     <div
@@ -39,7 +57,10 @@ const CreateProject = () => {
           <div className="flex items-center justify-center mt-5">
             <div className="w-20 overflow-hidden rounded-xl height-20">
               <img
-                src="https://media.wired.com/photos/5926e641f3e2356fd800ad1d/master/w_2560%2Cc_limit/AnkiTA.jpg"
+                src={
+                  imageURL ||
+                  "https://media.wired.com/photos/5926e641f3e2356fd800ad1d/master/w_2560%2Cc_limit/AnkiTA.jpg"
+                }
                 alt="Project title"
                 className="object-cover w-full h-full cursor-pointer rounded-xl"
               />
@@ -61,9 +82,9 @@ const CreateProject = () => {
             <input
               className="block w-full text-sm bg-transparent border-0 text-slate-500 focus:outline-none focus:ring-0"
               type="number"
-              name="amount"
-              placeholder="Amount      {ETH}"
-              onChange={(e) => setAmount(e.target.value)}
+              name="cost"
+              placeholder="Cost      {ETH}"
+              onChange={(e) => setCost(e.target.value)}
               required
             />
           </div>

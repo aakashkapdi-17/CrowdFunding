@@ -21,7 +21,6 @@ const connectWallet = async () => {
   } catch (e) {
     console.log(`Error connecting to wallet :${e}`);
   }
-  console.log(process.env);
 };
 
 const isWalletConnected = async () => {
@@ -38,18 +37,30 @@ const isWalletConnected = async () => {
   }
 };
 
-const getEthereumContract = () => {
+const getEtheriumContract = async () => {
   const connectedAccount = getGlobalState("connectedAccount");
+
   if (connectedAccount) {
-    const contract = null;
     const provider = new ethers.BrowserProvider(window.ethereum);
-    provider.getSigner().then((signer) => {
-      contract = new ethers.Contract(contractAddress, contractABI, signer);
-    });
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(contractAddress, contractABI, signer);
+
     return contract;
   } else {
     return getGlobalState("contract");
   }
 };
 
-export { connectWallet, isWalletConnected };
+const createProject = async (params) => {
+  const contract = await getEtheriumContract();
+  console.log(contract);
+  await contract.createProject(
+    params.title,
+    params.description,
+    params.imageURL,
+    ethers.parseEther(params.cost),
+    params.expiresAt
+  );
+};
+
+export { connectWallet, isWalletConnected, createProject };
